@@ -18,7 +18,20 @@ type ViewportSize = {
   height?: number;
 };
 
+
 async function ensureBrowser(viewport?: ViewportSize) {
+  // Check if the browser connection is still active
+  if (page) {
+    try {
+      await page!.title();
+    } catch (e : any) {
+      if (e.message.includes('browser has been closed')) {
+        console.error('Connection to browser lost, reconnect...');
+        browser = undefined;
+      }
+    }
+  }
+
   if (!browser) {
     try {
       // First try to connect to existing Chrome instance
